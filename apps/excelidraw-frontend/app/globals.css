@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+.hide-vertical-scrollbar {
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-vertical-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-vertical-scroll {
+  overflow-y: hidden;
+}

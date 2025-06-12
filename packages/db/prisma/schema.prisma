@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String  @id @default(uuid())
+  email    String  @unique
+  password String
+  name     String
+  photo    String?
+  rooms    Room[]
+  Chat     Chat[]
+  Shape    Shape[]
+}
+
+model Room {
+  id        Int      @id @default(autoincrement())
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  adminId   String
+  admin     User     @relation(fields: [adminId], references: [id])
+  chats     Chat[]
+  Shape     Shape[]
+}
+
+model Chat {
+  id      Int    @id @default(autoincrement())
+  message String
+  userId  String
+  user    User   @relation(fields: [userId], references: [id])
+  roomId  Int
+  room    Room   @relation(fields: [roomId], references: [id])
+}
+
+model Rectangle {
+  id      String @id @default(uuid())
+  shapeId String @unique
+  shape   Shape  @relation(fields: [shapeId], references: [id], onDelete: Cascade)
+
+  startX Int
+  startY Int
+  width  Int
+  height Int
+}
+
+model Circle {
+  id      String @id @default(uuid())
+  shapeId String @unique()
+  shape   Shape  @relation(fields: [shapeId], references: [id], onDelete: Cascade)
+
+  startX Int
+  startY Int
+  radius Int
+}
+
+model Line {
+  id      String @id @default(uuid())
+  shapeId String @unique
+  shape   Shape  @relation(fields: [shapeId], references: [id], onDelete: Cascade)
+
+  startX Int
+  startY Int
+  endX   Int
+  endY   Int
+}
+
+enum StringType {
+  Rectangle
+  Circle
+  Line
+}
+
+model Shape {
+  id     String     @id @default(uuid())
+  type   StringType
+  userId String
+  user   User       @relation(fields: [userId], references: [id])
+  roomId Int
+  room   Room       @relation(fields: [roomId], references: [id])
+
+  Rectangle Rectangle?
+  Circle    Circle?
+  Line      Line?
+
+  @@index([roomId])
+  @@index([userId])
+}

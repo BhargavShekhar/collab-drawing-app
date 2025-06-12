@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/db/db.ts","./src/middlewares/auth.ts","./src/routes/chat.ts","./src/routes/createroom.ts","./src/routes/room.ts","./src/routes/shape.ts","./src/routes/signin.ts","./src/routes/signup.ts"],"version":"5.8.2"}
