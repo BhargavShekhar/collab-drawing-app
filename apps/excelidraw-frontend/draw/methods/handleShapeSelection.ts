@@ -7,6 +7,7 @@ export function handleShapeSelection(
     shapes: ShapeType[],
     canvas: HTMLCanvasElement
 ): {
+    shape: ShapeType | null;
     selectedShape: CircleType | RectangleType | LineType | null;
     dragOffsetX: number;
     dragOffsetY: number;
@@ -19,6 +20,7 @@ export function handleShapeSelection(
                 rect.isMoving = true;
                 canvas.style.cursor = "move";
                 return {
+                    shape,
                     selectedShape: rect,
                     dragOffsetX: x - rect.startX,
                     dragOffsetY: y - rect.startY,
@@ -30,6 +32,7 @@ export function handleShapeSelection(
                 circle.isMoving = true;
                 canvas.style.cursor = "move";
                 return {
+                    shape,
                     selectedShape: circle,
                     dragOffsetX: x - circle.startX,
                     dragOffsetY: y - circle.startY,
@@ -41,6 +44,7 @@ export function handleShapeSelection(
                 line.isMoving = true;
                 canvas.style.cursor = "move";
                 return {
+                    shape,
                     selectedShape: line,
                     dragOffsetX: x - line.startX,
                     dragOffsetY: y - line.startY
@@ -50,6 +54,7 @@ export function handleShapeSelection(
     }
 
     return {
+        shape: null,
         selectedShape: null,
         dragOffsetX: 0,
         dragOffsetY: 0,

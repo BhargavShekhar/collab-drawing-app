@@ -33,7 +33,7 @@ export class CanvasApp {
     };
 
     private selectShape: RectangleType | CircleType | LineType | null = null;
-    private prevShape: RectangleType | CircleType | LineType | null = null;
+    private Shape: ShapeType | null = null;
 
     constructor(
         canvas: HTMLCanvasElement,
@@ -65,6 +65,22 @@ export class CanvasApp {
             if (message.type === "draw") {
                 const shape = message.shape;
                 this.existingShapes.push(shape);
+                this.render();
+            } else if (message.type === "move") {
+                const shape = message.shape;
+
+                this.existingShapes = this.existingShapes.map(shapes => {
+                    if (shape.type === "Rectangle" && shapes.Rectangle?.id === shape.Rectangle.id) {
+                        return { ...shapes, Rectangle: shape.Rectangle };
+                    } else if (shape.type === "Circle" && shapes.Circle?.id === shape.Circle.id) {
+                        return { ...shapes, Circle: shape.Circle };
+                    } else if (shape.type === "Line" && shapes.Line?.id === shape.Line.id) {
+                        return { ...shapes, Line: shape.Line };
+                    }
+
+                    return shapes;
+                })
+
                 this.render();
             }
         }
@@ -98,7 +114,7 @@ export class CanvasApp {
             this.selectShape = result.selectedShape;
             this.dragOffsetX = result.dragOffsetX;
             this.dragOffsetY = result.dragOffsetY;
-            this.prevShape = this.selectShape;
+            this.Shape = result.shape;
         }
 
         if (tool === toolType.pointer) {
@@ -159,18 +175,12 @@ export class CanvasApp {
         this.panningState.isPanning = false;
 
         if (this.selectShape) {
-            if (this.prevShape) {
-                // this.socket.send(JSON.stringify({
-                //     type: "move",
-                //     roomId: this.roomId,
-                //     shape: {
-                //         type: this.selectShape.type,
-                //         [this.selectShape.type]: {
-                //             shapeId: this.selectShape.shapeId,
-                //             ...this.selectShape
-                //         }
-                //     }
-                // }));
+            if (this.Shape) {
+                this.socket.send(JSON.stringify({
+                    type: "move",
+                    roomId: this.roomId,
+                    shape: this.Shape
+                }));
             }
 
             this.selectShape.isMoving = false;
