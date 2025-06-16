@@ -10,26 +10,28 @@ const signinRouter: Router = Router();
 signinRouter.post("/", async (req, res) => {
     const validateData = SigninSchema.safeParse(req.body);
 
-    if(!validateData.success) {
-        res.status(400).json({ msg: "Did not received a valid data", error: validateData.error });
+    if (!validateData.success) {
+        res.status(400).json({ msg: validateData.error.issues[0]?.message });
         return;
     }
 
     const { email, password } = validateData.data;
 
-    try {        
-        const user =  await prismaClient.user.findUnique({
+    try {
+        const user = await prismaClient.user.findUnique({
             where: { email }
         })
 
-        if(!user) {
+        if (!user) {
+            console.log("no user found")
             res.status(404).json({ msg: "No such user found" });
             return;
         }
 
         const match = await bcrypt.compare(password, user.password);
 
-        if(!match) {
+        if (!match) {
+            console.log("password did not matched")
             res.status(401).json({ msg: "Incorrect password" });
             return;
         }
@@ -38,8 +40,15 @@ signinRouter.post("/", async (req, res) => {
             id: user.id
         }, JWT_SECRET);
 
-        // res.header("Authorization", `Bearer ${token}`)
-        res.json({ msg: "signin succesfull", token });
+        res.json({
+            msg: "signin succesfull",
+            token,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email
+            }
+        });
 
     } catch (error) {
         console.log(error);

@@ -2,6 +2,9 @@
 
 import React, { JSX, useState } from 'react';
 import { Users, Lock, Globe, Palette, Settings, ArrowRight, Copy, Share2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import { HTTP_BACKEND } from '@/config';
 
 interface Room {
     id: string;
@@ -23,23 +26,37 @@ export default function CreateRoom(): JSX.Element {
     const [canvasSize, setCanvasSize] = useState<CanvasSize>('medium');
     const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
     const [createdRoom, setCreatedRoom] = useState<Room | null>(null);
+    const [canCreateRoom, setCanCreateRoom] = useState<boolean>(true);
 
-    const generateRoomId = (): string => {
-        return Math.random().toString(36).substring(2, 8).toUpperCase();
-    };
+    const router = useRouter();
 
-    const handleCreateRoom = (): void => {
-        const roomId = generateRoomId();
+    const handleCreateRoom = async () => {
+        const roomId = "not generated";
         const room: Room = {
             id: roomId,
             name: roomName || `Drawing Room ${roomId}`,
             type: roomType,
             maxUsers,
             canvasSize,
-            url: `${window.location.origin}/room/${roomId}`,
+            url: `${window.location.origin}/canvas/${roomName}`,
             createdAt: new Date().toISOString()
         };
-        setCreatedRoom(room);
+
+        try {
+            const res = await axios.post(`${HTTP_BACKEND}/create-room`, {
+                slug: room.url,
+            })
+            if (res.data?.roomId) {
+                room.id = res.data.roomId
+                setCreatedRoom(room);
+            } else {
+                throw new Error('No room ID returned');
+            }
+        } catch (error) {
+            console.error('Room creation failed:', error);
+            setCreatedRoom(null);
+            setCanCreateRoom(false);
+        }
     };
 
     const copyToClipboard = async (text: string): Promise<void> => {
@@ -109,7 +126,9 @@ export default function CreateRoom(): JSX.Element {
                                         Share Link
                                     </button>
                                     <button
-                                        onClick={() => window.open(createdRoom.url, '_blank')}
+                                        onClick={() => {
+                                            window.open(createdRoom.url, '_blank');
+                                        }}
                                         className="flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-xl transition-all transform hover:scale-105 flex items-center justify-center gap-2"
                                     >
                                         Join Room
@@ -152,8 +171,9 @@ export default function CreateRoom(): JSX.Element {
                                 type="text"
                                 value={roomName}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRoomName(e.target.value)}
-                                placeholder="Enter room name (optional)"
+                                placeholder="Enter room name"
                                 className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                required
                             />
                         </div>
 
@@ -166,8 +186,8 @@ export default function CreateRoom(): JSX.Element {
                                     type="button"
                                     onClick={() => setRoomType('public')}
                                     className={`p-4 rounded-xl border-2 transition-all ${roomType === 'public'
-                                            ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                            : 'border-gray-200 hover:border-gray-300'
+                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                        : 'border-gray-200 hover:border-gray-300'
                                         }`}
                                 >
                                     <Globe className="w-6 h-6 mx-auto mb-2" />
@@ -178,8 +198,8 @@ export default function CreateRoom(): JSX.Element {
                                     type="button"
                                     onClick={() => setRoomType('private')}
                                     className={`p-4 rounded-xl border-2 transition-all ${roomType === 'private'
-                                            ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                            : 'border-gray-200 hover:border-gray-300'
+                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                        : 'border-gray-200 hover:border-gray-300'
                                         }`}
                                 >
                                     <Lock className="w-6 h-6 mx-auto mb-2" />
@@ -236,6 +256,10 @@ export default function CreateRoom(): JSX.Element {
                             </div>
                         )}
 
+                        {!canCreateRoom && 
+                            <h1 className='text-red-600 text-center'>Could not create Room!!</h1>
+                        }
+
                         <button
                             type="button"
                             onClick={handleCreateRoom}
@@ -244,6 +268,7 @@ export default function CreateRoom(): JSX.Element {
                             Create Room
                             <ArrowRight className="w-5 h-5" />
                         </button>
+
                     </div>
 
                     <div className="mt-8 text-center">
