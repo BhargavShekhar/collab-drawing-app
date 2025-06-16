@@ -15,10 +15,10 @@ interface TokenPayload extends JwtPayload {
 }
 
 export const auth = (req: Request, res: Response, next: NextFunction) => {
-    // const authHeader = req.headers["authorization"];
-    // const token = authHeader && authHeader.split(" ")[1];
 
     const token = req.headers["authorization"];
+
+    console.log("token", token);
 
     if (!token) {
         res.status(401).json({ msg: "can not get token, please signin again" });

@@ -1,10 +1,12 @@
 "use client"
 
-import React, { JSX, useState } from 'react';
+import React, { JSX, useEffect, useState } from 'react';
 import { Users, Lock, Globe, Palette, Settings, ArrowRight, Copy, Share2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { HTTP_BACKEND } from '@/config';
+import { getSession } from 'next-auth/react';
+import { Session } from "next-auth";
 
 interface Room {
     id: string;
@@ -19,7 +21,7 @@ interface Room {
 type RoomType = 'public' | 'private';
 type CanvasSize = 'small' | 'medium' | 'large' | 'unlimited';
 
-export default function CreateRoom(): JSX.Element {
+export default function CreateRoomClient(): JSX.Element {
     const [roomName, setRoomName] = useState<string>('');
     const [roomType, setRoomType] = useState<RoomType>('public');
     const [maxUsers, setMaxUsers] = useState<number>(10);
@@ -29,6 +31,16 @@ export default function CreateRoom(): JSX.Element {
     const [canCreateRoom, setCanCreateRoom] = useState<boolean>(true);
 
     const router = useRouter();
+
+    const [session, setSession] = useState<Session | null>(null);
+
+    useEffect(() => {
+        async function fetchSession() {
+            const sess = await getSession();
+            setSession(sess);
+        }
+        fetchSession();
+    }, []);
 
     const handleCreateRoom = async () => {
         const roomId = "not generated";
@@ -43,9 +55,14 @@ export default function CreateRoom(): JSX.Element {
         };
 
         try {
-            const res = await axios.post(`${HTTP_BACKEND}/create-room`, {
-                slug: room.url,
-            })
+            const token = session?.accessToken;
+
+            const res = await axios.post(
+                `${HTTP_BACKEND}/create-room`,
+                { slug: roomName },
+                { headers: { Authorization: token } }
+            );
+
             if (res.data?.roomId) {
                 room.id = res.data.roomId
                 setCreatedRoom(room);
@@ -256,18 +273,34 @@ export default function CreateRoom(): JSX.Element {
                             </div>
                         )}
 
-                        {!canCreateRoom && 
+                        {!canCreateRoom &&
                             <h1 className='text-red-600 text-center'>Could not create Room!!</h1>
                         }
 
-                        <button
-                            type="button"
-                            onClick={handleCreateRoom}
-                            className="w-full px-6 py-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-medium rounded-xl transition-all transform hover:scale-105 flex items-center justify-center gap-2 shadow-lg"
-                        >
-                            Create Room
-                            <ArrowRight className="w-5 h-5" />
-                        </button>
+                        {session &&
+                            <button
+                                type="button"
+                                onClick={handleCreateRoom}
+                                className="w-full px-6 py-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-medium rounded-xl transition-all transform hover:scale-105 flex items-center justify-center gap-2 shadow-lg"
+                            >
+                                Create Room
+                                <ArrowRight className="w-5 h-5" />
+                            </button>
+                        }
+
+                        {!session &&
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    router.push("/signin")
+                                }}
+                                className="w-full px-6 py-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-medium rounded-xl transition-all transform hover:scale-105 flex items-center justify-center gap-2 shadow-lg"
+                            >
+                                Signin First
+                                <ArrowRight className="w-5 h-5" />
+                            </button>
+                        }
+
 
                     </div>
 
