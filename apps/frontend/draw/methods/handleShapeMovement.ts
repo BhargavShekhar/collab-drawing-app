@@ -16,8 +16,20 @@ export function handleShapeMovement(
 ): void {
     if (!shape || !isMoving) return;
 
-    shape.startX = x - dragOffsetX;
-    shape.startY = y - dragOffsetY;
+    const newStartX = x - dragOffsetX;
+    const newStartY = y - dragOffsetY;
+
+    if ("endX" in shape && "endY" in shape) {
+        const dx = newStartX - shape.startX;
+        const dy = newStartY - shape.startY;
+
+        shape.endX += dx;
+        shape.endY += dy;
+    }
+
+    shape.startX = newStartX;
+    shape.startY = newStartY;
+
 
     reRender(canvas, ctx, shapes, cameraOffset);
 }
