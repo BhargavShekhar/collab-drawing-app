@@ -56,14 +56,13 @@ export enum toolType {
   rectangle = "rectangle",
   circle = "circle",
   line = "line",
-  select = "select",
-  undo = "undo",
-  redo = "redo"
+  select = "select"
 }
 
 export interface toolsInterface {
   id: toolType,
-  icon: React.ReactNode
+  icon: React.ReactNode,
+  label: string
 }
 
 // App State Type
