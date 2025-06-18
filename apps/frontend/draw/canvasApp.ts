@@ -7,7 +7,7 @@ import { handlePanning } from "./methods/handlePanning";
 import { handleShapeDraw } from "./methods/handleShapeDraw";
 import { handleShapeMovement } from "./methods/handleShapeMovement";
 import { handleShapeSelection } from "./methods/handleShapeSelection";
-import { CircleType, LineType, RectangleType, ShapeType, toolType } from "./types";
+import { AppState, CircleType, LineType, RectangleType, ShapeType, toolType } from "./types";
 
 export class CanvasApp {
     private canvas: HTMLCanvasElement;
@@ -35,6 +35,10 @@ export class CanvasApp {
     private selectShape: RectangleType | CircleType | LineType | null = null;
     private Shape: ShapeType | null = null;
 
+    private MAX_HISTORY = 50;
+    private undoStack: AppState[] = [];
+    private redoStack: AppState[] = [];
+
     constructor(
         canvas: HTMLCanvasElement,
         roomId: string,
@@ -56,6 +60,8 @@ export class CanvasApp {
         this.setupListeners();
         this.render();
         this.setupSocket();
+
+        this.saveState();
     }
 
     private setupSocket() {
@@ -98,7 +104,55 @@ export class CanvasApp {
         };
     }
 
+    private saveState() {
+        const clone = JSON.parse(JSON.stringify(this.existingShapes)) as ShapeType[];
+        this.undoStack.push({ shapes: clone });
+
+        if (this.undoStack.length > this.MAX_HISTORY) {
+            this.undoStack.shift();
+        }
+
+        this.redoStack = [];
+    }
+
+    public undo() {
+        if (this.undoStack.length <= 1) return;
+
+        console.log("undo button is clicked!!")
+
+        const currentState = this.undoStack.pop();
+
+        if (currentState) this.redoStack.push(currentState);
+
+        const prevState = this.undoStack[this.undoStack.length - 1];
+        this.existingShapes = JSON.parse(JSON.stringify(prevState.shapes));
+
+        this.render();
+    }
+
+    public redo() {
+        if (this.redoStack.length === 0) return;
+
+        const next = this.redoStack.pop();
+        if (next) {
+            this.undoStack.push(JSON.parse(JSON.stringify(next)));
+            this.existingShapes = JSON.parse(JSON.stringify(next.shapes));
+            this.render();
+        }
+    }
+
     private onMouseDown = (e: MouseEvent) => {
+        const tool = this.tool;
+
+        if (tool === toolType.undo) {
+            this.undo();
+            return;
+        }
+        if (tool === toolType.redo) {
+            this.redo();
+            return;
+        }
+
         this.isClicked = true;
 
         const cameraOffset = this.cameraOffset;
@@ -107,16 +161,14 @@ export class CanvasApp {
         this.startX = worldMouseX;
         this.startY = worldMouseY;
 
-        const tool = this.tool;
-
         if (tool === toolType.select) {
             const result = handleShapeSelection(worldMouseX, worldMouseY, this.existingShapes, this.canvas);
             this.selectShape = result.selectedShape;
             this.dragOffsetX = result.dragOffsetX;
             this.dragOffsetY = result.dragOffsetY;
             this.Shape = result.shape;
+            return;
         }
-
         if (tool === toolType.pointer) {
             this.panningState = {
                 isPanning: true,
@@ -124,6 +176,7 @@ export class CanvasApp {
                 startPanY: e.clientY,
                 initialCameraOffset: { ...this.cameraOffset },
             };
+            return;
         }
     };
 
@@ -181,6 +234,8 @@ export class CanvasApp {
                     roomId: this.roomId,
                     shape: this.Shape
                 }));
+
+                this.saveState();
             }
 
             this.selectShape.isMoving = false;
@@ -198,6 +253,7 @@ export class CanvasApp {
                 roomId: this.roomId,
                 shape: newShape
             }));
+            this.saveState();
             this.render();
         }
     };

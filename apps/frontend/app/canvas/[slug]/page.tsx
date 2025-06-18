@@ -24,8 +24,8 @@ export default async function Canvas({ params }: {
 }) {
     const slug = (await params).slug;
     const roomId = await getRoomId(slug);
-    const existingShapes: ShapeType[] = await getExistingShapes(roomId);
-    // const existingShapes: ShapeType[] = [];
+    // const existingShapes: ShapeType[] = await getExistingShapes(roomId);
+    const existingShapes: ShapeType[] = [];
 
     if (!roomId) {
         return (

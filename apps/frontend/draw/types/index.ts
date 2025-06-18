@@ -1,16 +1,4 @@
-export enum toolType {
-  pointer = "pointer",
-  rectangle = "rectangle",
-  circle = "circle",
-  line = "line",
-  select = "select"
-}
-
-export interface toolsInterface {
-  id: toolType,
-  icon: React.ReactNode
-}
-
+// Shapes type
 export type RectangleType = {
   id: string;
   startX: number;
@@ -61,3 +49,24 @@ type LineShape = BaseShape & {
 }
 
 export type ShapeType = RectangleShape | CircleShape | LineShape;
+
+// Tool Types
+export enum toolType {
+  pointer = "pointer",
+  rectangle = "rectangle",
+  circle = "circle",
+  line = "line",
+  select = "select",
+  undo = "undo",
+  redo = "redo"
+}
+
+export interface toolsInterface {
+  id: toolType,
+  icon: React.ReactNode
+}
+
+// App State Type
+export type AppState = {
+  shapes: ShapeType[]
+}
