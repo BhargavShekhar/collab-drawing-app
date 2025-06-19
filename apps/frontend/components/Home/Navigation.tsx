@@ -1,12 +1,27 @@
 import { LogIn, Palette, UserPlus } from 'lucide-react'
 import { Session } from 'next-auth'
+import { getSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react';
 
-function Navigation({session, isSignedIn}: {
-    session: Session | null,
-    isSignedIn: boolean
-}) {
+function Navigation() {
     const router = useRouter();
+
+    const [session, setSession] = useState<Session | null>(null);
+    const [isSignedIn, setIsSignedIn] = useState(false);
+
+    useEffect(() => {
+        const fetchSession = async () => {
+            const mySesstion = await getSession();
+            setSession(mySesstion);
+        }
+        fetchSession();
+    }, []);
+
+    useEffect(() => {
+        if (session) setIsSignedIn(true);
+        else setIsSignedIn(false);
+    }, [session]);
 
     return (
         <nav className="relative z-10 flex justify-between items-center p-6 backdrop-blur-sm bg-black/10">

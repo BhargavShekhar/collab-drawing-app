@@ -1,9 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from 'react';
-import { Session } from 'next-auth';
 import { Feather } from 'lucide-react';
-import { getSession } from 'next-auth/react';
 import { GridPattern } from '@/components/Home/GridPattern';
 import { ParticleField } from '@/components/Home/ParticleField';
 import { FloatingShape } from '@/components/Home/FloatingShape';
@@ -12,22 +9,6 @@ import Navigation from '@/components/Home/Navigation';
 import Hero from '@/components/Home/Hero';
 
 const HomePage = () => {
-	const [session, setSession] = useState<Session | null>(null);
-	const [isSignedIn, setIsSignedIn] = useState(false);
-
-	useEffect(() => {
-		const fetchSession = async () => {
-			const mySesstion = await getSession();
-			setSession(mySesstion);
-		}
-		fetchSession();
-	}, []);
-
-	useEffect(() => {
-		if (session) setIsSignedIn(true);
-		else setIsSignedIn(false);
-	}, [session]);
-
 	return (
 		<div className="min-h-screen bg-black text-white relative overflow-hidden">
       {/* Enhanced Background Elements */}
@@ -56,8 +37,8 @@ const HomePage = () => {
         </div>
       </div>
 
-      <Navigation session={session} isSignedIn />
-      <Hero isSignedIn />
+      <Navigation />
+      <Hero />
       <Feather />
       <Footer />
     </div>

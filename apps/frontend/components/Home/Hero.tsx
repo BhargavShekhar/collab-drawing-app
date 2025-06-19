@@ -1,14 +1,29 @@
 import { ArrowRight, Plus, Sparkles } from "lucide-react"
 import FeatureIcons from "./FeatureIcons"
 import { useRouter } from "next/navigation"
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getSession } from "next-auth/react";
+import { Session } from "next-auth";
 
-function Hero({isSignedIn}: {
-    isSignedIn: boolean
-}) {
+function Hero() {
     const [roomName, setRoomName] = useState('');
-
+    const [session, setSession] = useState<Session | null>(null);
+    const [isSignedIn, setIsSignedIn] = useState(false);
+    
     const router = useRouter();
+
+    useEffect(() => {
+        const fetchSession = async () => {
+            const mySesstion = await getSession();
+            setSession(mySesstion);
+        }
+        fetchSession();
+    }, []);
+
+    useEffect(() => {
+        if (session) setIsSignedIn(true);
+        else setIsSignedIn(false);
+    }, [session]);
 
     const handleJoinRoom = () => {
         const url = `${window.location.origin}/canvas/${roomName}`
