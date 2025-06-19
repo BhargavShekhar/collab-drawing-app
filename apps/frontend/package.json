@@ -12,6 +12,7 @@
     "@react-hook/window-size": "^3.1.1",
     "@repo/ui": "workspace:*",
     "axios": "^1.9.0",
+    "framer-motion": "^12.18.1",
     "lucide-react": "^0.511.0",
     "next": "15.3.2",
     "next-auth": "^4.24.11",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@repo/types": "workspace:*",
     "@tailwindcss/postcss": "^4.1.7",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -29,7 +31,6 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
     "tailwindcss": "^4",
-    "typescript": "^5",
-    "@repo/types": "workspace:*"
+    "typescript": "^5"
   }
 }
