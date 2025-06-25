@@ -6,7 +6,7 @@ import { checkAuth } from "./auth";
 
 const wss = new WebSocketServer({ port: 8080 });
 
-interface UserType {
+export interface UserType {
     userId: string,
     rooms: string[],
     ws: WebSocket
@@ -69,35 +69,6 @@ wss.on("connection", (ws, request) => {
             if (!user) return;
 
             user.rooms = user.rooms.filter(room => room === parsedData.room);
-        }
-
-        if (parsedData.type === "chat") {
-            const roomId = parsedData.roomId;
-            const message = parsedData.message;
-
-            try {
-                Users.forEach(user => {
-                    // if (user.ws === ws) return;
-                    // TODO add auth logic so not all users can send messages
-                    if (user.rooms.includes(roomId)) {
-                        user.ws.send(JSON.stringify({
-                            type: "chat",
-                            message,
-                            roomId
-                        }))
-                    }
-                })
-
-                await prismaClient.chat.create({
-                    data: {
-                        roomId,
-                        message,
-                        userId
-                    }
-                })
-            } catch (error) {
-                console.log(error);
-            }
         }
 
         if (parsedData.type === "draw") {

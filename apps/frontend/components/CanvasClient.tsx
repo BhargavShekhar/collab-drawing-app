@@ -47,6 +47,10 @@ export default function CanvasClient({ roomId, existingShapes }: {
                 setCanRedo(canRedo);
             };
 
+            if (canvasAppRef.current) {
+                canvasAppRef.current.setTool(tool);
+            }
+
             const app = new CanvasApp(
                 canvas,
                 roomId,
@@ -67,16 +71,12 @@ export default function CanvasClient({ roomId, existingShapes }: {
                 canvasAppRef.current = null;
             }
         }
-    }, [canvasRef, loading, socket, roomId, width, height]);
-
-    useEffect(() => {
-        if (canvasAppRef.current) {
-            canvasAppRef.current.setTool(tool);
-        }
-    }, [tool]);
+    }, [canvasRef, loading, socket, roomId, width, height, tool]);
 
     const handleUndo = () => {
+        console.log("Before Undo", existingShapes);
         canvasAppRef.current?.undo();
+        console.log("After Undo", existingShapes);
     };
 
     const handleRedo = () => {
@@ -101,9 +101,9 @@ export default function CanvasClient({ roomId, existingShapes }: {
                 width={width}
                 height={height}
                 className="absolute inset-0 cursor-crosshair"
-                style={{ 
+                style={{
                     background: 'black',
-                    imageRendering: 'pixelated' 
+                    imageRendering: 'pixelated'
                 }}
             />
 
@@ -119,15 +119,15 @@ export default function CanvasClient({ roomId, existingShapes }: {
                                 title={label}
                                 className={`
                                     group relative p-3 rounded-lg transition-all duration-200 ease-out
-                                    ${tool === id 
-                                        ? "bg-blue-500 text-white shadow-lg shadow-blue-500/25 scale-105" 
+                                    ${tool === id
+                                        ? "bg-blue-500 text-white shadow-lg shadow-blue-500/25 scale-105"
                                         : "bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white hover:scale-105"
                                     }
                                     focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50
                                 `}
                             >
                                 {icon}
-                                
+
                                 {/* Tooltip */}
                                 <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 
                                               bg-gray-900 text-white text-sm px-2 py-1 rounded-md
@@ -157,7 +157,7 @@ export default function CanvasClient({ roomId, existingShapes }: {
                             `}
                         >
                             <Undo className="w-5 h-5" />
-                            
+
                             {/* Tooltip */}
                             <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 
                                           bg-gray-900 text-white text-sm px-2 py-1 rounded-md
@@ -166,7 +166,7 @@ export default function CanvasClient({ roomId, existingShapes }: {
                                 Undo
                             </div>
                         </button>
-                        
+
                         <button
                             onClick={handleRedo}
                             disabled={!canRedo}
@@ -181,7 +181,7 @@ export default function CanvasClient({ roomId, existingShapes }: {
                             `}
                         >
                             <Redo className="w-5 h-5" />
-                            
+
                             {/* Tooltip */}
                             <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 
                                           bg-gray-900 text-white text-sm px-2 py-1 rounded-md
@@ -197,14 +197,14 @@ export default function CanvasClient({ roomId, existingShapes }: {
             {/* Room Info */}
             <div className="absolute top-6 right-6 bg-gray-900/95 backdrop-blur-sm border border-gray-700 
                           rounded-xl px-4 py-2 text-white text-sm shadow-2xl">
-                <span className="text-gray-400">Room:</span> 
+                <span className="text-gray-400">Room:</span>
                 <span className="font-mono ml-1">{roomId}</span>
             </div>
 
             {/* Status Bar */}
             <div className="absolute bottom-6 left-6 bg-gray-900/95 backdrop-blur-sm border border-gray-700 
                           rounded-xl px-4 py-2 text-white text-sm shadow-2xl">
-                <span className="text-gray-400">Tool:</span> 
+                <span className="text-gray-400">Tool:</span>
                 <span className="ml-1 capitalize">{drawingTools.find(t => t.id === tool)?.label || 'Unknown'}</span>
             </div>
         </div>

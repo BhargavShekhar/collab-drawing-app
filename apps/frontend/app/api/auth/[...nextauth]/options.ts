@@ -14,7 +14,6 @@ export const authOptions: NextAuthOptions = {
             },
             async authorize(credentials, req) {
                 try {
-                    console.log(`backend url: ${HTTP_BACKEND}/signin`)
                     const res = await axios.post(`${HTTP_BACKEND}/signin`, {
                         email: credentials?.email,
                         password: credentials?.password

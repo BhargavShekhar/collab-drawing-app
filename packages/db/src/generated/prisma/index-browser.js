@@ -135,13 +135,6 @@ exports.Prisma.RoomScalarFieldEnum = {
   adminId: 'adminId'
 };
 
-exports.Prisma.ChatScalarFieldEnum = {
-  id: 'id',
-  message: 'message',
-  userId: 'userId',
-  roomId: 'roomId'
-};
-
 exports.Prisma.RectangleScalarFieldEnum = {
   id: 'id',
   shapeId: 'shapeId',
@@ -198,7 +191,6 @@ exports.StringType = exports.$Enums.StringType = {
 exports.Prisma.ModelName = {
   User: 'User',
   Room: 'Room',
-  Chat: 'Chat',
   Rectangle: 'Rectangle',
   Circle: 'Circle',
   Line: 'Line',
