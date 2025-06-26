@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="https://user-images.githubusercontent.com/0000000/0000000/canvas-logo-banner.svg" height="150" alt="Canvas Banner"/>
-
 # 🎨 **LiveCanvas**
 *Draw. Collaborate. Create. In Real-Time.*
 
