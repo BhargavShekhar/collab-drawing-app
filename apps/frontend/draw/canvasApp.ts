@@ -99,6 +99,12 @@ export class CanvasApp {
             } else if (message.type === "undo" || message.type === "redo") {
                 const shapeDiff: DiffType = message.diff;
                 this.applyDiff(shapeDiff);
+            } else if (message.type === "clear") {
+                this.existingShapes = [];
+                this.undoStack = [];
+                this.redoStack = [];
+
+                this.render();
             }
         }
     }
@@ -229,6 +235,7 @@ export class CanvasApp {
 
             return;
         } else if (tool === toolType.pointer) {
+            console.log("Pointer Clicked")
             this.panningState = {
                 isPanning: true,
                 startPanX: e.clientX,
@@ -237,6 +244,8 @@ export class CanvasApp {
             };
             return;
         } else if (tool === toolType.clear) {
+            console.log("Clear Clicked!!")
+
             this.socket.send(JSON.stringify({
                 type: "clear",
                 roomId: this.roomId
@@ -245,6 +254,8 @@ export class CanvasApp {
             this.existingShapes = [];
             this.undoStack = [];
             this.redoStack = [];
+
+            this.render();
         }
     };
 

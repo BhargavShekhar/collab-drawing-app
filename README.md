@@ -5,7 +5,7 @@
 
 A multiplayer, collaborative infinite canvas web app for sketching, diagramming, and ideation — powered by WebSockets, built with performance in mind.
 
-[![Made with Bun](https://img.shields.io/badge/Runtime-Bun-blue?style=for-the-badge&logo=bun&logoColor=white)](https://bun.sh)
+[![pnpm](https://img.shields.io/badge/Package%20Manager-pnpm-F69220?style=for-the-badge&logo=pnpm&logoColor=white)](https://pnpm.io)
 [![Next.js](https://img.shields.io/badge/Frontend-Next.js-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
 [![WebSockets](https://img.shields.io/badge/Realtime-WebSockets-purple?style=for-the-badge&logo=socketdotio)]()
 [![Prisma](https://img.shields.io/badge/ORM-Prisma-2D3748?style=for-the-badge&logo=prisma)](https://prisma.io)
@@ -53,15 +53,11 @@ WebSocket syncs:
 ## Future-ready for presence indicators, cursor sharing, etc.
 
 🧪 Planned Features
-🔄 Collaborative Undo/Redo
-
 🎯 Selection + Group Transformations
 
 🌈 Drawing tools: colors, shapes, text
 
 💬 In-canvas Chat (already supported)
-
-🪄 AI-assist integration (🤫 coming soon?)
 
 ## 🤝 Contributing
 We love collaborators!

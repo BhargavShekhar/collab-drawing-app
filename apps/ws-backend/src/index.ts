@@ -169,5 +169,23 @@ wss.on("connection", (ws, request) => {
             }
         }
 
+        if (parsedData.type === "clear") {
+            const { roomId } = parsedData;
+            try {
+                Users.forEach(user => {
+                    if(user.rooms.includes(roomId) && user.ws !== ws) {
+                        user.ws.send(JSON.stringify({
+                            type: "clear",
+                            roomId
+                        }))
+                    }
+                })
+
+                await prismaClient.shape.deleteMany();
+            } catch (error) {
+                console.log("Could not clear Shapes in the database", error);
+            }
+        }
+
     })
 })
