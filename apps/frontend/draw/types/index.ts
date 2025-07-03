@@ -56,7 +56,8 @@ export enum toolType {
   rectangle = "rectangle",
   circle = "circle",
   line = "line",
-  select = "select"
+  select = "select",
+  clear = "clear"
 }
 
 export interface toolsInterface {

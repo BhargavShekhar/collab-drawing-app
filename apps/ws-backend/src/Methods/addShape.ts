@@ -17,6 +17,5 @@ export async function addShape(shape: ShapeType, userId: string, roomId: number)
         }
     } catch (error) {
         console.log("Error occured at addShape");
-        throw error;
     }
 }

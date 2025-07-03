@@ -15,7 +15,6 @@ model User {
   name     String
   photo    String?
   rooms    Room[]
-  Chat     Chat[]
   Shape    Shape[]
 }
 
@@ -25,21 +24,11 @@ model Room {
   createdAt DateTime @default(now())
   adminId   String
   admin     User     @relation(fields: [adminId], references: [id])
-  chats     Chat[]
   Shape     Shape[]
 }
 
-model Chat {
-  id      Int    @id @default(autoincrement())
-  message String
-  userId  String
-  user    User   @relation(fields: [userId], references: [id])
-  roomId  Int
-  room    Room   @relation(fields: [roomId], references: [id])
-}
-
 model Rectangle {
-  id      String @id @default(uuid())
+  id      String @id
   shapeId String @unique
   shape   Shape  @relation(fields: [shapeId], references: [id], onDelete: Cascade)
 
@@ -50,7 +39,7 @@ model Rectangle {
 }
 
 model Circle {
-  id      String @id @default(uuid())
+  id      String @id
   shapeId String @unique()
   shape   Shape  @relation(fields: [shapeId], references: [id], onDelete: Cascade)
 
@@ -60,7 +49,7 @@ model Circle {
 }
 
 model Line {
-  id      String @id @default(uuid())
+  id      String @id
   shapeId String @unique
   shape   Shape  @relation(fields: [shapeId], references: [id], onDelete: Cascade)
 

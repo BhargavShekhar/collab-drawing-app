@@ -1,6 +1,10 @@
 import { WebSocket, WebSocketServer } from "ws";
 import { prismaClient } from "@repo/db/client";
 import { checkAuth } from "./auth";
+import { addShape } from "./Methods/addShape";
+import { DiffType, ShapeType } from "@repo/common/types/types";
+import { removeShape } from "./Methods/removeShape";
+import { updateShape } from "./Methods/updateShape";
 
 // TODO improve the architecture by adding singletons or redux to it
 
@@ -86,70 +90,7 @@ wss.on("connection", (ws, request) => {
                     }
                 })
 
-                if (shape.type === "Rectangle") {
-                    const { id, startX, startY, height, width } = shape.Rectangle;
-
-                    const createShape = await prismaClient.shape.create({
-                        data: {
-                            type: "Rectangle",
-                            userId,
-                            roomId
-                        }
-                    })
-
-                    await prismaClient.rectangle.create({
-                        data: {
-                            id,
-                            shapeId: createShape.id,
-                            startX,
-                            startY,
-                            width,
-                            height
-                        }
-                    })
-
-                } else if (shape.type === "Circle") {
-                    const { id, startX, startY, radius } = shape.Circle;
-
-                    const createShape = await prismaClient.shape.create({
-                        data: {
-                            type: "Circle",
-                            userId,
-                            roomId
-                        }
-                    })
-
-                    await prismaClient.circle.create({
-                        data: {
-                            id,
-                            shapeId: createShape.id,
-                            startX,
-                            startY,
-                            radius
-                        }
-                    })
-                } else if (shape.type === "Line") {
-                    const { id, startX, startY, endX, endY } = shape.Line;
-
-                    const createShape = await prismaClient.shape.create({
-                        data: {
-                            type: "Line",
-                            userId,
-                            roomId
-                        }
-                    })
-
-                    await prismaClient.line.create({
-                        data: {
-                            id,
-                            shapeId: createShape.id,
-                            startX,
-                            startY,
-                            endX,
-                            endY
-                        }
-                    })
-                }
+                addShape(shape, userId, roomId);
 
             } catch (error) {
                 console.log(error);
@@ -192,6 +133,39 @@ wss.on("connection", (ws, request) => {
                 }
             } catch (error) {
                 console.log(error)
+            }
+        }
+
+        if (parsedData.type === "undo" || parsedData.type === "redo") {
+            const roomId = parsedData.roomId;
+            const shapeDiff: DiffType = parsedData.diff;
+            const messageType = parsedData.type === "undo" ? "undo": "redo";
+
+            try {
+                Users.forEach(user => {
+                    if(user.rooms.includes(roomId) && user.ws !== ws) {
+                        user.ws.send(JSON.stringify({
+                            type: messageType,
+                            roomId,
+                            diff: shapeDiff
+                        }))
+                    }
+                })
+
+                if(shapeDiff.added.length > 0) {
+                    const shapes: ShapeType[] = shapeDiff.added;
+                    for (const shape of shapes) addShape(shape, userId, roomId);
+                }
+                if(shapeDiff.removed.length > 0) {
+                    const shapes: ShapeType[] = shapeDiff.removed;
+                    for (const shape of shapes) removeShape(shape);
+                }
+                if(shapeDiff.modified.length > 0) {
+                    const shapes: ShapeType[] = shapeDiff.modified;
+                    for (const shape of shapes) updateShape(shape);
+                }
+            } catch (error) {
+                console.log(error);
             }
         }
 

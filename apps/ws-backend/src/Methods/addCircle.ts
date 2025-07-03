@@ -7,7 +7,7 @@ export async function addCircle({ userId, roomId, circle }: {
     circle: CircleType
 }) {
     try {
-        const { startX, startY, radius } = circle;
+        const { id, startX, startY, radius } = circle;
         const createShape = await prismaClient.shape.create({
             data: {
                 type: "Circle",
@@ -18,6 +18,7 @@ export async function addCircle({ userId, roomId, circle }: {
 
         await prismaClient.circle.create({
             data: {
+                id,
                 shapeId: createShape.id,
                 startX,
                 startY,
@@ -26,6 +27,5 @@ export async function addCircle({ userId, roomId, circle }: {
         })
     } catch (error) {
         console.log("Error occured ar addCircle");
-        throw error
     }
 }

@@ -26,8 +26,9 @@ model Room {
   admin     User     @relation(fields: [adminId], references: [id])
   Shape     Shape[]
 }
+
 model Rectangle {
-  id      String @id @default(uuid())
+  id      String @id
   shapeId String @unique
   shape   Shape  @relation(fields: [shapeId], references: [id], onDelete: Cascade)
 
@@ -38,7 +39,7 @@ model Rectangle {
 }
 
 model Circle {
-  id      String @id @default(uuid())
+  id      String @id
   shapeId String @unique()
   shape   Shape  @relation(fields: [shapeId], references: [id], onDelete: Cascade)
 
@@ -48,7 +49,7 @@ model Circle {
 }
 
 model Line {
-  id      String @id @default(uuid())
+  id      String @id
   shapeId String @unique
   shape   Shape  @relation(fields: [shapeId], references: [id], onDelete: Cascade)
 

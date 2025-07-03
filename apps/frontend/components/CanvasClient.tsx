@@ -2,7 +2,7 @@
 
 import { useSocket } from "@/app/hooks/useSocket";
 import { useEffect, useRef, useState } from "react";
-import { MousePointerClick, Square, Circle, ScanLine, BoxSelect, Undo, Redo } from "lucide-react";
+import { MousePointerClick, Square, Circle, PencilLine, BoxSelect, Undo, Redo, Trash } from "lucide-react";
 import { ShapeType, toolsInterface, toolType } from "@/draw/types";
 import { useWindowSize } from '@react-hook/window-size'
 import { CanvasApp } from "@/draw/canvasApp";
@@ -25,8 +25,9 @@ export default function CanvasClient({ roomId, existingShapes }: {
         { id: toolType.pointer, icon: <MousePointerClick className="w-5 h-5" />, label: "Select" },
         { id: toolType.rectangle, icon: <Square className="w-5 h-5" />, label: "Rectangle" },
         { id: toolType.circle, icon: <Circle className="w-5 h-5" />, label: "Circle" },
-        { id: toolType.line, icon: <ScanLine className="w-5 h-5" />, label: "Line" },
-        { id: toolType.select, icon: <BoxSelect className="w-5 h-5" />, label: "Box Select" }
+        { id: toolType.line, icon: <PencilLine className="w-5 h-5" />, label: "Line" },
+        { id: toolType.select, icon: <BoxSelect className="w-5 h-5" />, label: "Select Shape" },
+        { id: toolType.clear, icon: <Trash className="w-5 h-5" />, label: "Clear Canvas" }
     ]
 
     useEffect(() => {
@@ -74,9 +75,9 @@ export default function CanvasClient({ roomId, existingShapes }: {
     }, [canvasRef, loading, socket, roomId, width, height, tool]);
 
     const handleUndo = () => {
-        console.log("Before Undo", existingShapes);
+        // console.log("Before Undo", existingShapes);
         canvasAppRef.current?.undo();
-        console.log("After Undo", existingShapes);
+        // console.log("After Undo", existingShapes);
     };
 
     const handleRedo = () => {

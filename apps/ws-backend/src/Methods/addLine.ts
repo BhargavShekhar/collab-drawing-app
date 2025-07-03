@@ -7,7 +7,7 @@ export async function addLine({ userId, roomId, line }: {
     line: LineType
 }) {
     try {
-        const { startX, startY, endX, endY } = line;
+        const {  id,startX, startY, endX, endY } = line;
         const createShape = await prismaClient.shape.create({
             data: {
                 type: "Line",
@@ -18,6 +18,7 @@ export async function addLine({ userId, roomId, line }: {
 
         await prismaClient.line.create({
             data: {
+                id,
                 shapeId: createShape.id,
                 startX,
                 startY,
@@ -27,6 +28,5 @@ export async function addLine({ userId, roomId, line }: {
         })
     } catch (error) {
         console.log("Error occured ar addLine");
-        throw error
     }
 }

@@ -7,7 +7,7 @@ export async function addRectangle({ userId, roomId, rectangle }: {
     rectangle: RectangleType,
 }) {
     try {
-        const { startX, startY, width, height } = rectangle
+        const { startX, startY, width, height, id } = rectangle
 
         const createdShape = await prismaClient.shape.create({
             data: {
@@ -19,15 +19,15 @@ export async function addRectangle({ userId, roomId, rectangle }: {
 
         await prismaClient.rectangle.create({
             data: {
+                id,
                 shapeId: createdShape.id,
                 startX,
                 startY,
                 height,
-                width
+                width,
             }
         })
     } catch (error) {
         console.log("Error occured ar addRectangle");
-        throw error
     }
 }

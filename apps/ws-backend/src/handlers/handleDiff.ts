@@ -12,7 +12,7 @@ export async function handleDiff({ ws, diff, roomId, Users, userId }: {
     Users: UserType[],
     userId: string
 }) {
-    const { added, removed, updated } = diff;
+    const { added, removed, modified } = diff;
 
     Users.forEach(user => {
         if (user.rooms.includes(String(roomId)) && user.ws !== ws) {
@@ -30,7 +30,7 @@ export async function handleDiff({ ws, diff, roomId, Users, userId }: {
             // handle removed shapes
             for (const shape of removed) await removeShape(shape);
             // handle update shapes
-            for (const shape of updated) await updateShape(shape);
+            for (const shape of modified) await updateShape(shape);
     } catch (error) {
         console.error("❌ handleDiff failed for room", roomId, "with error:", error);
     }

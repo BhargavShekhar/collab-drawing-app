@@ -1,6 +1,9 @@
 import clearCanvas from "./canvas-methods/clear";
 import { reRender } from "./canvas-methods/re-render";
 import renderExistingShapes from "./canvas-methods/render-shapes";
+import { getDiff } from "./methods/getDiff";
+import { getShapeId } from "./methods/getShapeId";
+import { getShapeMap } from "./methods/getShapeMap";
 import { getWorldMouse } from "./methods/getWorldMouse";
 import { handleDrawingPreview } from "./methods/handleDrawingPreview";
 import { handlePanning } from "./methods/handlePanning";
@@ -8,6 +11,7 @@ import { handleShapeDraw } from "./methods/handleShapeDraw";
 import { handleShapeMovement } from "./methods/handleShapeMovement";
 import { handleShapeSelection } from "./methods/handleShapeSelection";
 import { AppState, CircleType, LineType, RectangleType, ShapeType, toolType } from "./types";
+import { DiffType } from "@repo/common/types/types"
 
 export class CanvasApp {
     private canvas: HTMLCanvasElement;
@@ -49,7 +53,7 @@ export class CanvasApp {
         tool: toolType,
         cameraOffset: { x: number, y: number },
         setCameraOffset: React.Dispatch<React.SetStateAction<{ x: number, y: number }>>,
-        onHistoryChange: (canUndo: boolean, canRedo: boolean) => void 
+        onHistoryChange: (canUndo: boolean, canRedo: boolean) => void
     ) {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d")!;
@@ -92,6 +96,9 @@ export class CanvasApp {
                 })
 
                 this.render();
+            } else if (message.type === "undo" || message.type === "redo") {
+                const shapeDiff: DiffType = message.diff;
+                this.applyDiff(shapeDiff);
             }
         }
     }
@@ -134,10 +141,21 @@ export class CanvasApp {
 
         const currentState = this.undoStack.pop();
 
-        if (currentState) this.redoStack.push(currentState);
+        if (!currentState) return;
+
+        this.redoStack.push(currentState);
 
         const prevState = this.undoStack[this.undoStack.length - 1];
+
+        const diff = getDiff(currentState.shapes, prevState.shapes);
+
         this.existingShapes = JSON.parse(JSON.stringify(prevState.shapes));
+
+        this.socket.send(JSON.stringify({
+            type: "undo",
+            roomId: this.roomId,
+            diff
+        }))
 
         this.render();
         this.onHistoryChange(this.canUndo(), this.canRedo());
@@ -148,11 +166,46 @@ export class CanvasApp {
 
         const next = this.redoStack.pop();
         if (next) {
+            const currentState: AppState = {
+                shapes: JSON.parse(JSON.stringify(this.existingShapes))
+            };
+
+            const diff: DiffType = getDiff(currentState.shapes, next.shapes);
+            
             this.undoStack.push(JSON.parse(JSON.stringify(next)));
             this.existingShapes = JSON.parse(JSON.stringify(next.shapes));
+            
+            this.socket.send(JSON.stringify({
+            type: "redo",
+            roomId: this.roomId,
+                diff
+            }))
+
             this.render();
             this.onHistoryChange(this.canUndo(), this.canRedo());
         }
+    }
+
+    private applyDiff(shapeDiff: DiffType) {
+        const shapeMap = getShapeMap(this.existingShapes);
+
+        for (const shape of shapeDiff.added) {
+            const id = getShapeId(shape);
+            shapeMap.set(id, shape);
+        }
+
+        for (const shape of shapeDiff.removed) {
+            const id = getShapeId(shape);
+            shapeMap.delete(id);
+        }
+
+        for (const shape of shapeDiff.modified) {
+            const id = getShapeId(shape);
+            shapeMap.set(id, shape);
+        }
+
+        this.existingShapes = Array.from(shapeMap.values());
+        this.render();
     }
 
     private onMouseDown = (e: MouseEvent) => {
@@ -173,10 +226,9 @@ export class CanvasApp {
             this.dragOffsetX = result.dragOffsetX;
             this.dragOffsetY = result.dragOffsetY;
             this.Shape = result.shape;
-            
+
             return;
-        }
-        if (tool === toolType.pointer) {
+        } else if (tool === toolType.pointer) {
             this.panningState = {
                 isPanning: true,
                 startPanX: e.clientX,
@@ -184,6 +236,15 @@ export class CanvasApp {
                 initialCameraOffset: { ...this.cameraOffset },
             };
             return;
+        } else if (tool === toolType.clear) {
+            this.socket.send(JSON.stringify({
+                type: "clear",
+                roomId: this.roomId
+            }))
+
+            this.existingShapes = [];
+            this.undoStack = [];
+            this.redoStack = [];
         }
     };
 

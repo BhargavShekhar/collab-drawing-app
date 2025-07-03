@@ -54,5 +54,5 @@ export type ShapeType = RectangleShape | CircleShape | LineShape;
 export interface DiffType {
     added: ShapeType[],
     removed: ShapeType[],
-    updated: ShapeType[],
+    modified: ShapeType[],
 }

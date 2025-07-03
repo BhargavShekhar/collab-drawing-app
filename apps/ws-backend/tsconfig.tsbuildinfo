@@ -1,1 +1,1 @@
-{"root":["./src/auth.ts","./src/index.ts"],"version":"5.8.2"}
+{"root":["./src/auth.ts","./src/index.ts","./src/methods/addcircle.ts","./src/methods/addline.ts","./src/methods/addrectangle.ts","./src/methods/addshape.ts","./src/methods/removeshape.ts","./src/methods/updateshape.ts","./src/handlers/handlediff.ts"],"version":"5.8.2"}

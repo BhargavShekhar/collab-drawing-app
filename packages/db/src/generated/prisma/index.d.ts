@@ -8763,7 +8763,7 @@ export namespace Prisma {
   }
 
   export type RectangleCreateInput = {
-    id?: string
+    id: string
     startX: number
     startY: number
     width: number
@@ -8772,7 +8772,7 @@ export namespace Prisma {
   }
 
   export type RectangleUncheckedCreateInput = {
-    id?: string
+    id: string
     shapeId: string
     startX: number
     startY: number
@@ -8799,7 +8799,7 @@ export namespace Prisma {
   }
 
   export type RectangleCreateManyInput = {
-    id?: string
+    id: string
     shapeId: string
     startX: number
     startY: number
@@ -8825,7 +8825,7 @@ export namespace Prisma {
   }
 
   export type CircleCreateInput = {
-    id?: string
+    id: string
     startX: number
     startY: number
     radius: number
@@ -8833,7 +8833,7 @@ export namespace Prisma {
   }
 
   export type CircleUncheckedCreateInput = {
-    id?: string
+    id: string
     shapeId: string
     startX: number
     startY: number
@@ -8857,7 +8857,7 @@ export namespace Prisma {
   }
 
   export type CircleCreateManyInput = {
-    id?: string
+    id: string
     shapeId: string
     startX: number
     startY: number
@@ -8880,7 +8880,7 @@ export namespace Prisma {
   }
 
   export type LineCreateInput = {
-    id?: string
+    id: string
     startX: number
     startY: number
     endX: number
@@ -8889,7 +8889,7 @@ export namespace Prisma {
   }
 
   export type LineUncheckedCreateInput = {
-    id?: string
+    id: string
     shapeId: string
     startX: number
     startY: number
@@ -8916,7 +8916,7 @@ export namespace Prisma {
   }
 
   export type LineCreateManyInput = {
-    id?: string
+    id: string
     shapeId: string
     startX: number
     startY: number
@@ -10270,7 +10270,7 @@ export namespace Prisma {
   }
 
   export type RectangleCreateWithoutShapeInput = {
-    id?: string
+    id: string
     startX: number
     startY: number
     width: number
@@ -10278,7 +10278,7 @@ export namespace Prisma {
   }
 
   export type RectangleUncheckedCreateWithoutShapeInput = {
-    id?: string
+    id: string
     startX: number
     startY: number
     width: number
@@ -10291,14 +10291,14 @@ export namespace Prisma {
   }
 
   export type CircleCreateWithoutShapeInput = {
-    id?: string
+    id: string
     startX: number
     startY: number
     radius: number
   }
 
   export type CircleUncheckedCreateWithoutShapeInput = {
-    id?: string
+    id: string
     startX: number
     startY: number
     radius: number
@@ -10310,7 +10310,7 @@ export namespace Prisma {
   }
 
   export type LineCreateWithoutShapeInput = {
-    id?: string
+    id: string
     startX: number
     startY: number
     endX: number
@@ -10318,7 +10318,7 @@ export namespace Prisma {
   }
 
   export type LineUncheckedCreateWithoutShapeInput = {
-    id?: string
+    id: string
     startX: number
     startY: number
     endX: number
