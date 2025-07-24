@@ -33,7 +33,7 @@ A multiplayer, collaborative infinite canvas web app for sketching, diagramming,
 |------------|-----------------------------------|
 | Frontend   | Next.js, React, Tailwind CSS      |
 | Backend    | Express / Node.js (or API routes) |
-| Realtime   | Native WebSockets                 |
+| Realtime   | WebSockets                        |
 | Database   | PostgreSQL + Prisma ORM           |
 | Dev Tools  | Bun, Turborepo, TypeScript        |
 

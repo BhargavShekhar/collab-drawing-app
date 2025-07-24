@@ -2,10 +2,11 @@
 
 import { useSocket } from "@/app/hooks/useSocket";
 import { useEffect, useRef, useState } from "react";
-import { MousePointerClick, Square, Circle, PencilLine, BoxSelect, Undo, Redo, Trash } from "lucide-react";
+import { MousePointerClick, Square, Circle, PencilLine, BoxSelect, Undo, Redo, Trash, TextCursorIcon } from "lucide-react";
 import { ShapeType, toolsInterface, toolType } from "@/draw/types";
 import { useWindowSize } from '@react-hook/window-size'
 import { CanvasApp } from "@/draw/canvasApp";
+import { useDebounce } from "use-debounce"
 
 export default function CanvasClient({ roomId, existingShapes }: {
     roomId: string,
@@ -15,6 +16,8 @@ export default function CanvasClient({ roomId, existingShapes }: {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [tool, setTool] = useState<toolType>(toolType.pointer);
     const [width, height] = useWindowSize();
+    const [debounceWidth] = useDebounce(width, 100);
+    const [debounceHeight] = useDebounce(height, 100);
     const [cameraOffset, setCameraOffset] = useState({ x: 0, y: 0 });
 
     const canvasAppRef = useRef<CanvasApp | null>(null);
@@ -27,6 +30,7 @@ export default function CanvasClient({ roomId, existingShapes }: {
         { id: toolType.circle, icon: <Circle className="w-5 h-5" />, label: "Circle" },
         { id: toolType.line, icon: <PencilLine className="w-5 h-5" />, label: "Line" },
         { id: toolType.select, icon: <BoxSelect className="w-5 h-5" />, label: "Select Shape" },
+        { id: toolType.text, icon: <TextCursorIcon className="w-5 h-5" />, label: "Select Text" },
         { id: toolType.clear, icon: <Trash className="w-5 h-5" />, label: "Clear Canvas" }
     ]
 
@@ -48,10 +52,6 @@ export default function CanvasClient({ roomId, existingShapes }: {
                 setCanRedo(canRedo);
             };
 
-            if (canvasAppRef.current) {
-                canvasAppRef.current.setTool(tool);
-            }
-
             const app = new CanvasApp(
                 canvas,
                 roomId,
@@ -72,12 +72,23 @@ export default function CanvasClient({ roomId, existingShapes }: {
                 canvasAppRef.current = null;
             }
         }
-    }, [canvasRef, loading, socket, roomId, width, height, tool]);
+    }, [canvasRef, loading, socket, roomId]);
+
+    useEffect(() => {
+        if (canvasAppRef.current) {
+            canvasAppRef.current.setTool(tool);
+        }
+    }, [tool])
+
+    useEffect(() => {        
+        if(canvasAppRef.current) {
+            canvasAppRef.current.setHeight();
+        }
+
+    }, [debounceWidth, debounceHeight, canvasRef, canvasAppRef])
 
     const handleUndo = () => {
-        // console.log("Before Undo", existingShapes);
         canvasAppRef.current?.undo();
-        // console.log("After Undo", existingShapes);
     };
 
     const handleRedo = () => {
@@ -96,7 +107,7 @@ export default function CanvasClient({ roomId, existingShapes }: {
     }
 
     return (
-        <div className="w-screen h-screen relative bg-black">
+        <div className="relative bg-black">
             <canvas
                 ref={canvasRef}
                 width={width}
@@ -104,7 +115,7 @@ export default function CanvasClient({ roomId, existingShapes }: {
                 className="absolute inset-0 cursor-crosshair"
                 style={{
                     background: 'black',
-                    imageRendering: 'pixelated'
+                    imageRendering: 'pixelated',
                 }}
             />
 

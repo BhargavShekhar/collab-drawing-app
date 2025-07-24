@@ -26,7 +26,6 @@ export default async function Canvas({ params }: {
     const slug = (await params).slug;
     const roomId = await getRoomId(slug);
     const existingShapes: ShapeType[] | null = await getExistingShapes(roomId);
-    // const existingShapes: ShapeType[] = [];
 
     if (!roomId || !existingShapes) {
         console.log("could not fetch either roomId or existing shapes");
