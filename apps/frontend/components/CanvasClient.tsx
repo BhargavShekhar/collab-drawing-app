@@ -30,7 +30,7 @@ export default function CanvasClient({ roomId, existingShapes }: {
         { id: toolType.circle, icon: <Circle className="w-5 h-5" />, label: "Circle" },
         { id: toolType.line, icon: <PencilLine className="w-5 h-5" />, label: "Line" },
         { id: toolType.select, icon: <BoxSelect className="w-5 h-5" />, label: "Select Shape" },
-        { id: toolType.text, icon: <TextCursorIcon className="w-5 h-5" />, label: "Select Text" },
+        // { id: toolType.text, icon: <TextCursorIcon className="w-5 h-5" />, label: "Select Text" },
         { id: toolType.clear, icon: <Trash className="w-5 h-5" />, label: "Clear Canvas" }
     ]
 

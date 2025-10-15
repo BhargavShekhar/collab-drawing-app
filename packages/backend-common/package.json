@@ -6,7 +6,8 @@
     "./config": "./dist/config.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -b",
+    "clean": "rm -rf dist"
   },
   "keywords": [],
   "author": "",

@@ -1,6 +1,6 @@
-import { LogIn, Palette, UserPlus } from 'lucide-react'
+import { LogIn, LogOut, Palette, UserPlus } from 'lucide-react'
 import { Session } from 'next-auth'
-import { getSession } from 'next-auth/react';
+import { getSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react';
 
@@ -54,6 +54,14 @@ function Navigation() {
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-full shadow-lg shadow-green-400/25"></div>
                         <span>Welcome back! {session?.user.name}</span>
+
+                        <button
+                            onClick={() => signOut({ callbackUrl: '/' })}
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition-all duration-300 shadow-md shadow-red-500/25 border border-blue-700/50"
+                        >
+                            <LogOut className="w-4 h-4" />
+                            Logout
+                        </button>
                     </div>
                 )}
             </div>

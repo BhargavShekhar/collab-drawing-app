@@ -179,7 +179,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\Bhargav Shekhar\\Desktop\\my-draw\\packages\\db\\src\\generated\\prisma",
+      "value": "/home/nightfury/Desktop/Projects/collab-drawing-app/packages/db/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -188,12 +188,12 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "windows",
+        "value": "debian-openssl-3.0.x",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\Bhargav Shekhar\\Desktop\\my-draw\\packages\\db\\prisma\\schema.prisma",
+    "sourceFilePath": "/home/nightfury/Desktop/Projects/collab-drawing-app/packages/db/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -207,6 +207,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {

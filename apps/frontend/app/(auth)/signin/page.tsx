@@ -1,17 +1,17 @@
 "use client"
 
 import { AuthPage } from "@/components/AuthPage"
-import { useSession, signIn, signOut } from "next-auth/react"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import { useEffect } from "react";
 
 export default function Component() {
-    const { data: session } = useSession()
-    if (session) {
-        return (
-            <>
-                Signed in as {session.user?.email} <br />
-                <button onClick={() => signOut()}>Sign out</button>
-            </>
-        )
-    }
+    const router = useRouter();
+    const { status } = useSession()
+
+    useEffect(() => {
+        if (status === "authenticated") router.push("/")
+    }, [status, router])
+
     return <AuthPage isSignin={true} />
 }
