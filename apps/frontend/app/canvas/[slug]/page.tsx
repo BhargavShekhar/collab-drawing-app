@@ -18,12 +18,12 @@ async function getRoomId(slug: string) {
     }
 }
 
-export default async function Canvas({ params }: {
-    params: {
-        slug: string
-    }
-}) {
-    const slug = (await params).slug;
+type CanvasPageProps = {
+    params: Promise<{ slug: string }>
+}
+
+export default async function Canvas({ params }: CanvasPageProps) {
+    const { slug } = await params;
     const roomId = await getRoomId(slug);
     const existingShapes: ShapeType[] | null = await getExistingShapes(roomId);
 

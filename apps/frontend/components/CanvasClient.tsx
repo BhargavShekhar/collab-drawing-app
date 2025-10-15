@@ -2,7 +2,7 @@
 
 import { useSocket } from "@/app/hooks/useSocket";
 import { useEffect, useRef, useState } from "react";
-import { MousePointerClick, Square, Circle, PencilLine, BoxSelect, Undo, Redo, Trash, TextCursorIcon } from "lucide-react";
+import { MousePointerClick, Square, Circle, PencilLine, BoxSelect, Undo, Redo, Trash } from "lucide-react";
 import { ShapeType, toolsInterface, toolType } from "@/draw/types";
 import { useWindowSize } from '@react-hook/window-size'
 import { CanvasApp } from "@/draw/canvasApp";
