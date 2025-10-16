@@ -1,49 +1,64 @@
-# base stage
-FROM node:20-alpine AS base
+# ========================
+# Builder stage
+# ========================
+FROM node:20-alpine AS builder
+# Setup pnpm
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+WORKDIR /app
+
+# Copy dependency-related files
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY turbo.json ./
+
+# Install ALL dependencies for the build
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+
+# Copy the rest of the source code
+COPY . .
+
+# Run the build for the frontend app
+RUN pnpm turbo build --filter=frontend
+
+# ========================
+# Runner stage
+# ========================
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+# Setup pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
-# build stage
-FROM base AS builder
-WORKDIR /app
-
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY turbo.json ./
-
-# install all monoreop dependency
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-
-COPY . .
-
-RUN pnpm turbo build --filter=frontend
-
-# runner stage
-FROM base AS runner
-WORKDIR /app
-
 ENV NODE_ENV=production
 
-ENV NEXTAUTH_SECRET="override-me-at-runtime"
-ENV NEXTAUTH_URL="http://localhost:3000"
+RUN addgroup --system --gid 1001 nodejs \
+    && adduser --system --uid 1001 nextjs
 
-# create a non root user for better security
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# ---- FIX IS HERE: PROVIDE WORKSPACE CONTEXT ----
+# 1. Copy root package manager files
+COPY --from=builder /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml ./
 
-# Copy package definitions and install production dependencies
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
+# 2. Create the app's directory structure and copy its specific package.json
+RUN mkdir -p /app/apps/frontend
+COPY --from=builder /app/apps/frontend/package.json /app/apps/frontend/package.json
 
-# Copy the built frontend code from the builder stage and also takes the root access
-COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/.next/static ./apps/frontend/.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/public ./apps/frontend/public
+# 3. Install dependencies FOR THAT WORKSPACE ONLY
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --prod --filter frontend --frozen-lockfile
+# -----------------------------------------------
 
-# switch to the non root user
+# Copy the built application assets
+COPY --from=builder /app/apps/frontend/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/.next/static ./.next/static
+
+# Copy the standalone server files
+COPY --from=builder /app/apps/frontend/.next/standalone/server.js .
+COPY --from=builder /app/apps/frontend/.next/standalone/.next ./.next
+
 USER nextjs
-
 EXPOSE 3000
 
-CMD [ "node", "apps/frontend/server.js" ]
+CMD ["node", "server.js"]
