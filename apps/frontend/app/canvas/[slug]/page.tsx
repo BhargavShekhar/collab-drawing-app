@@ -19,7 +19,7 @@ async function getRoomId(slug: string) {
 }
 
 type CanvasPageProps = {
-    params: { slug: string }
+    params: Promise<{ slug: string }>
 }
 
 export default async function Canvas({ params }: CanvasPageProps) {
