@@ -10,12 +10,12 @@ export function useSocket() {
     useEffect(() => {
         if (!session) return;
 
-        const ws = new WebSocket(`${WS_URL}?token=${session.accessToken}`);
+        const ws = new WebSocket(`${WS_URL}?token=${session?.accessToken}`);
         ws.onopen = () => {
             setLoading(false);
             setSocket(ws);
         }
-    }, []);
+    }, [session]);
 
     return {
         loading,
