@@ -8,7 +8,7 @@ import { updateShape } from "./Methods/updateShape";
 
 // TODO improve the architecture by adding singletons or redux to it
 
-const wss = new WebSocketServer({ port: 8080 });
+const wss = new WebSocketServer({ port: 8081 });
 
 export interface UserType {
     userId: string,
