@@ -19,6 +19,10 @@ app.use("/api/v1/create-room", createRoomRouter);
 app.use("/api/v1/room", RoomRouter);
 app.use("/api/v1/shape", shapeRouter);
 
+app.get("/", async (req, res) => {
+  res.json({ msg: "ping" })
+})
+
 app.listen(port, () => {
   console.log(`--- Server Running on port ${port} ---`);
 });

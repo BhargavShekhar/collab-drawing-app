@@ -51,6 +51,8 @@ wss.on("connection", (ws, request) => {
         return;
     }
 
+    console.log("websocket connected with: ", userId);
+
     Users.push({
         userId,
         rooms: [],
@@ -59,6 +61,12 @@ wss.on("connection", (ws, request) => {
 
     ws.on("message", async (data) => {
         const parsedData = JSON.parse(data as unknown as string);
+
+        if (parsedData.type === "ping") {
+            Users.forEach(user => {
+                user.ws.send("pong");
+            })
+        }
 
         if (parsedData.type === "join_room") {
             const user = Users.find(user => user.ws === ws);
