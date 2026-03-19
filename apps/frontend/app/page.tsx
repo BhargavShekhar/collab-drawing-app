@@ -9,6 +9,9 @@ import Navigation from '@/components/Home/Navigation';
 import Hero from '@/components/Home/Hero';
 
 const HomePage = () => {
+  console.log("NEXTAUTH_URL:", process.env.NEXTAUTH_URL);
+  console.log("NEXTAUTH_SECRET:", process.env.NEXTAUTH_SECRET);
+
 	return (
 		<div className="min-h-screen bg-black text-white relative overflow-hidden">
       {/* Enhanced Background Elements */}

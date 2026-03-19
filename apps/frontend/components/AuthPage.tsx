@@ -1,4 +1,4 @@
-import { HTTP_BACKEND } from "@/config";
+import { HTTP_BACKEND_CLIENT } from "@/config";
 import { Button } from "@repo/ui/button";
 import { Input } from "@repo/ui/input";
 import axios from "axios";
@@ -33,7 +33,7 @@ export function AuthPage({ isSignin }: {
             }
         } else {
             try {
-                const res = await axios.post(`${HTTP_BACKEND}/signup`, {
+                const res = await axios.post(`${HTTP_BACKEND_CLIENT}/signup`, {
                     email: emailRef.current?.value,
                     password: passwordRef.current?.value,
                     name: nameRef.current?.value
@@ -42,7 +42,7 @@ export function AuthPage({ isSignin }: {
 
             } catch (error: any) {
                 setError(true);
-                setErrorMessage(error.response.data.msg || "Sign-in failed");
+                setErrorMessage(error.response || "Sign-in failed");
             }
         }
     }

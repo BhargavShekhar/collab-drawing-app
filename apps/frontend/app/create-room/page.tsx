@@ -4,7 +4,7 @@ import React, { JSX, useEffect, useState } from 'react';
 import { Users, Lock, Globe, Palette, Settings, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import { HTTP_BACKEND } from '@/config';
+import { HTTP_BACKEND_CLIENT } from '@/config';
 import { getSession } from 'next-auth/react';
 import { Session } from "next-auth";
 import { CreateRoomForm } from '@/components/Create-Room/CreateRoomForm';
@@ -59,7 +59,7 @@ export default function CreateRoomClient(): JSX.Element {
             const token = session?.accessToken;
 
             const res = await axios.post(
-                `${HTTP_BACKEND}/create-room`,
+                `${HTTP_BACKEND_CLIENT}/create-room`,
                 { slug: roomName },
                 { headers: { Authorization: token } }
             );
